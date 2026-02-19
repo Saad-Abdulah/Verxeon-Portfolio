@@ -1,0 +1,255 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { Sparkles, Code, Globe, Brain, Shield, Cloud, Settings, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useMemo } from 'react'
+import { useAppData } from '@/app/Providers'
+import Image from 'next/image'
+import { getFileView } from '@/lib/appwrite'
+
+interface Industry {
+  $id: string
+  name: string
+  longDescription: string
+  category: string
+  features: string[]
+  color: string
+  icon: any
+  rating: number
+  reviews: number
+  price: string
+  deliveryTime: string
+}
+
+const Industries = () => {
+  const { industries, projects, isLoading, error } = useAppData()
+
+  // derive related projects for each industry locally
+  const industriesWithProjects = useMemo(() => {
+    if (!industries || industries.length === 0) return [] as (Industry & { projects?: any[] })[]
+    return industries.map((ind: any) => {
+      const related = Array.isArray(projects)
+        ? (projects as any[]).filter((p: any) => {
+            const services = Array.isArray(p.services) ? p.services : []
+            const ids = services.map((s: any) => (typeof s === 'string' ? s : s?.$id)).filter(Boolean)
+            return ids.includes(ind.$id)
+          })
+        : []
+      return { ...(ind as Industry), projects: related }
+    })
+  }, [industries, projects])
+
+  // Helper function to get icon based on industry name
+  const getIconForIndustry = (industryName: string) => {
+    const name = industryName.toLowerCase()
+    if (name.includes('web') || name.includes('frontend') || name.includes('backend')) return Code
+    if (name.includes('mobile') || name.includes('app')) return Globe
+    if (name.includes('ai') || name.includes('machine') || name.includes('intelligence')) return Brain
+    if (name.includes('security') || name.includes('cyber')) return Shield
+    if (name.includes('cloud') || name.includes('devops')) return Cloud
+    return Settings
+  }
+
+  function truncateText(text: string, limit: number) {
+    if (!text) return ''
+    if (text.length <= limit) return text
+    let truncated = text.substring(0, limit)
+    const lastSpace = truncated.lastIndexOf(' ')
+    if (lastSpace > 0) truncated = truncated.substring(0, lastSpace)
+    return truncated + '...'
+  }
+  
+  if (isLoading && industriesWithProjects.length === 0) {
+    return (
+      <section className="py-20 relative bg-page-background">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-card rounded-lg mb-4 max-w-md mx-auto"></div>
+            <div className="h-4 bg-card rounded-lg mb-8 max-w-2xl mx-auto"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card shadow-card rounded-xl p-6 h-64"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 relative bg-page-background">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="bg-card shadow-card p-12 rounded-2xl">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h3 className="text-2xl font-bold text-card-primary mb-2">Error: {error}</h3>
+            <p className="text-card-secondary mb-6">Failed to load industries. Please try again.</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="py-20 relative bg-page-background">
+      <div className="max-w-6xl mx-auto px-4">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold mb-6 text-card-primary">
+            Our Industries
+          </h2>
+          <p className="text-xl text-card-secondary max-w-3xl mx-auto leading-relaxed">
+            We specialize in delivering cutting-edge solutions across multiple industries, 
+            helping businesses transform and thrive in the digital age.
+          </p>
+        </motion.div>
+
+        {/* Industries Grid */}
+        {industriesWithProjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {industriesWithProjects.map((industry: any, index: number) => {
+              const Icon = getIconForIndustry(industry.name)
+              
+              return (
+                <motion.div
+                  key={industry.$id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="group"
+                >
+                  <div className="bg-card shadow-card rounded-xl p-6 h-full hover:scale-[1.02] transition-all duration-300 relative overflow-hidden">
+                    {/* Industry Header */}
+                    <div className="relative z-10 mb-6">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <Icon className={`h-8 w-8 text-primary`} />
+                        <h3 className="text-xl font-bold text-card-primary group-hover:text-primary transition-colors duration-300">
+                          {industry.name}
+                        </h3>
+                      </div>
+                      <p className="text-card-secondary text-sm leading-relaxed line-clamp-3">
+                        {industry.longDescription}
+                      </p>
+                    </div>
+
+                    {/* Features */}
+                    <div className="relative z-10 mb-6">
+                      <h4 className="text-sm font-semibold text-card-primary mb-3">What we Deliver</h4>
+                      <ul className="space-y-2">
+                        {(industry.features || []).slice(0, 4).map((feature: string, featureIndex: number) => (
+                          <li key={featureIndex} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-card-secondary text-xs">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Industry Footer */}
+                    <div className="relative z-10 mt-auto"> 
+                      <div className="mt-4 flex gap-3 justify-center">
+                        <Link 
+                          href="/contact" 
+                          className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-all duration-300"
+                        >
+                          Get Started
+                        </Link>
+                        <Link
+                          href={`/industries/${industry.$id}`} 
+                          className="px-4 py-2 bg-card border border-primary/20 text-primary rounded-lg text-sm font-medium hover:border-primary/40 hover:bg-primary/5 transition-all duration-300"
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Related Projects */}
+                    {industry.projects && industry.projects.length > 0 && (
+                      <div className="relative z-10 mt-6">
+                        <h4 className="text-sm font-semibold text-card-primary mb-3">{industry.projects.length}{industry.projects.length > 1 ? ' Related Projects' : ' Related Project'}</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {industry.projects.map((project: any) => (
+                            <div key={project.$id} className="bg-card shadow-card rounded-lg p-3 flex items-center gap-3">
+                              <div className="relative w-10 h-10">
+                                <Image
+                                  src={project.mainPicture ? getFileView(project.mainPicture) : '/next.svg'}
+                                  alt={project.title}
+                                  fill
+                                  className="object-cover rounded-lg border border-primary"
+                                  sizes="40px"
+                                />
+                              </div>
+                              <Link href={`/projects/${project.$id}`} className="text-sm font-medium text-card-primary hover:underline">
+                                {truncateText(project.title, 15)}
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center py-20"
+          >
+            <div className="bg-card shadow-card p-12 rounded-2xl">
+              <Code className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-card-primary mb-2">No Industries Yet</h3>
+              <p className="text-card-secondary mb-6">
+                We're working on expanding our industry expertise. Check back soon!
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* View All Industries CTA */}
+        {industriesWithProjects.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+            className="text-center mt-16"
+          >
+            <div className="bg-card shadow-card p-8 rounded-2xl">
+              <h3 className="text-2xl font-bold text-card-primary mb-4">
+                Ready to Explore Our Industries?
+              </h3>
+              <p className="text-card-secondary mb-6 max-w-2xl mx-auto">
+                Discover how we can help your business thrive in the digital landscape. 
+                From web development to AI solutions, we have the expertise you need.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/industries" className="px-5 py-2 flex items-center justify-center space-x-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 shadow-lg">
+                  <span>View All Industries</span>
+                </Link>
+                <Link href="/contact" className="px-5 py-2 bg-card border border-primary/20 text-primary rounded-lg font-medium hover:bg-primary/5 hover:border-dark shadow-lg shadow-primary/20 transition-all duration-300">
+                  Start Your Project
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+export default Industries 

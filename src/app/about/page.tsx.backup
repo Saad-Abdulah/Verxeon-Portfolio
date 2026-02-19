@@ -1,0 +1,566 @@
+'use client'
+
+import Footer from '@/components/shared/Footer'
+import { motion, useInView } from 'framer-motion'
+import { Users, Target, Rocket, Globe, Eye, Check, Workflow, Code, Brain, Cloud, Layers, Clock, Award } from 'lucide-react'
+import Link from 'next/link'
+import { useRef, useEffect, useState } from 'react'
+import Image from 'next/image'
+
+const AboutPage = () => {
+  const statsRef = useRef(null)
+  const isInView = useInView(statsRef, { once: true })
+  const [counts, setCounts] = useState([0, 0, 0, 0])
+  const [hasAnimated, setHasAnimated] = useState(false)
+
+  const stats = [
+    { number: 50, label: 'Projects Completed', icon: Rocket, suffix: '+', startFrom: 40 },
+    { number: 10, label: 'Happy Clients', icon: Users, suffix: '+', startFrom: 8 },
+    { number: 24, label: 'Support Available', icon: Clock, suffix: '/7', startFrom: 20 },
+    { number: 99.9, label: 'Client Satisfaction', icon: Award, suffix: '%', startFrom: 97 }
+  ]
+
+  useEffect(() => {
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true)
+      
+      // Set initial counts to start values
+      setCounts(stats.map(stat => stat.startFrom))
+      
+      // Start animation after a small delay
+      setTimeout(() => {
+        const duration = 2000 // 2 seconds for smoother animation
+        const steps = 60
+        const stepDuration = duration / steps
+        let currentStep = 0
+
+        const timer = setInterval(() => {
+          currentStep++
+          
+          setCounts(prevCounts => 
+            prevCounts.map((prev, index) => {
+              const target = stats[index].number
+              const start = stats[index].startFrom
+              const progress = currentStep / steps
+              const currentValue = start + (target - start) * progress
+              
+              return Math.min(currentValue, target)
+            })
+          )
+
+          if (currentStep >= steps) {
+            clearInterval(timer)
+            // Ensure final values are exact
+            setCounts(stats.map(stat => stat.number))
+          }
+        }, stepDuration)
+      }, 200) // Small delay to ensure smooth start
+    }
+  }, [isInView, hasAnimated, stats])
+
+  // Fallback: Start animation after component mounts if viewport detection fails
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (!hasAnimated) {
+        setHasAnimated(true)
+        setCounts(stats.map(stat => stat.startFrom))
+        
+        setTimeout(() => {
+          const duration = 2000
+          const steps = 60
+          const stepDuration = duration / steps
+          let currentStep = 0
+
+          const timer = setInterval(() => {
+            currentStep++
+            
+            setCounts(prevCounts => 
+              prevCounts.map((prev, index) => {
+                const target = stats[index].number
+                const start = stats[index].startFrom
+                const progress = currentStep / steps
+                const currentValue = start + (target - start) * progress
+                
+                return Math.min(currentValue, target)
+              })
+            )
+
+            if (currentStep >= steps) {
+              clearInterval(timer)
+              setCounts(stats.map(stat => stat.number))
+            }
+          }, stepDuration)
+        }, 200)
+      }
+    }, 1000) // 1 second fallback
+
+    return () => clearTimeout(fallbackTimer)
+  }, [hasAnimated, stats])
+
+  // Reset animation state when component unmounts
+  useEffect(() => {
+    return () => {
+      setHasAnimated(false)
+      setCounts([0, 0, 0, 0])
+    }
+  }, [])
+  const visions = [
+    {
+      step: '01',
+      title: 'Vision 2025',
+      icon: Eye,
+      points: [
+        'Product- and services-led company',
+        'Deliver practical value, not vanity',
+        'Build a high‑caliber core team',
+        'Put Pakistan on the global tech map',
+      ],
+    },
+    {
+      step: '02',
+      title: 'Vision 2027',
+      icon: Rocket,
+      points: [
+        'Scale using AI, cloud, and mobile',
+        'Create reusable components & platforms',
+        'Raise engineering excellence and speed',
+      ],
+    },
+    {
+      step: '03',
+      title: 'Vision 2030',
+      icon: Globe,
+      points: [
+        'Be globally recognized and trusted',
+        'Secure, scalable, human‑centered systems',
+        'Empower businesses and communities',
+      ],
+    },
+  ]
+
+
+  return (
+    <main className="min-h-screen bg-page-background">
+
+      {/* Hero Section with Fixed Background */}
+      <section className="relative overflow-hidden min-h-screen flex flex-col justify-between">
+        {/* Fixed Background Image */}
+        <div className="fixed inset-0 z-0">
+          <Image
+            src="/About.jpeg"
+            alt="DevSol Background"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-black/60"></div>
+        </div>
+
+        {/* Main Content Overlay - Single Grid Box - REVERTED TO PREVIOUS POSITION */}
+        <div className="relative z-10 w-full px-8 pt-64">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="bg-black/40 backdrop-blur-sm border border-white/20 rounded-2xl p-4 w-[85%] mx-auto min-h-[10vh] flex flex-col justify-center"
+          >
+            {/* About Us Header */}
+            <div className="mb-8">
+              <h3 className="text-sm md:text-base font-semibold text-white/80 tracking-widest uppercase mb-4">
+                ABOUT US
+              </h3>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                Empowering Businesses, Inspiring Innovation
+              </h1>
+            </div>
+            
+            {/* Description */}
+            <div className="mb-8">
+              <p className="text-lg md:text-xl text-white/90 leading-relaxed">
+                At DevSol, we specialize in transforming businesses with enterprise-grade software solutions tailored to their needs. With a legacy of technical excellence, a global team of over 1,200 experts, and a passion for innovation, we help organizations thrive in an ever-evolving digital landscape.
+              </p>
+            </div>
+
+            {/* Get in Touch Button */}
+            <div>
+              <Link 
+                href="/contact" 
+                className="inline-block bg-primary shadow shadow-white/50 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105"
+              >
+                Get in Touch
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+                {/* Stats Section - removed per user request */}
+      </section>
+
+      {/* Content Section that scrolls over the fixed background */}
+      <section className="relative z-10 bg-white min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 py-24">
+          {/* DevSol Story (now above Vision) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+              DevSol Story
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              A journey from a bold idea to a growing product‑minded company.<br/>
+              We build technology that simplifies life and empowers businesses.
+            </p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+            {/* Story - Left */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <div className="bg-white rounded-2xl p-10 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <h3 className="text-2xl font-bold mb-6 text-gray-900">DevSol Story</h3>
+                <div className="space-y-5 text-gray-600 leading-relaxed">
+                  <p>
+                    DevSol is a technology company built on a dream to go beyond traditional boundaries. In 2023, our founder Amir Shahzad envisioned creating a company that would not only compete with existing tech players but also deliver meaningful solutions to everyday problems.
+                  </p>
+                  <p>
+                    While most graduates in Pakistan focused only on securing jobs after completing their degrees, Amir believed in a different path. He saw the gap in the tech industry and imagined a platform where innovation, creativity, and entrepreneurship could thrive. In 2025, that vision turned into reality when DevSol was officially founded.
+                  </p>
+                  <p>
+                    Today, DevSol is a growing hub of innovation, powered by a passionate team working with one mission: to build technology that simplifies life, empowers businesses, and inspires the next generation.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Image - Right */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100 hover:shadow-3xl transition-all duration-300">
+                <Image
+                  src="/story.webp"
+                  alt="DevSol Story"
+                  width={800}
+                  height={600}
+                  className="w-full h-[380px] object-cover hover:scale-105 transition-transform duration-500"
+                  sizes="(min-width: 1024px) 800px, 100vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </div>
+            </motion.div>
+          </div>
+          {/* Vision Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+              Our Vision
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              We envision a future where technology empowers businesses to achieve their full potential through innovative solutions and cutting-edge AI applications.
+            </p>
+          </motion.div>
+
+          {/* Vision Narrative - replaces cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 items-stretch">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="h-full"
+            >
+              <div className="bg-white rounded-2xl p-10 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Our Vision</h3>
+                <div className="space-y-5 text-gray-600 leading-relaxed flex-grow">
+                  <p>
+                    Our vision is to establish DevSol as a global technology leader that transforms how people live and work. We aim to bring revolutionary change in tech by creating solutions that are innovative, scalable, and globally competitive.
+                  </p>
+                  <p>
+                    Pakistan has the talent to compete at the highest level, and DevSol strives to be the bridge that takes this talent to the world stage. Our ultimate goal is not just to build software — it is to build a movement of innovation that inspires millions.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Our Mission - Right */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="h-full"
+            >
+              <div className="bg-white rounded-2xl p-10 shadow-XL border border-gray-100 hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Our Mission</h3>
+                <div className="space-y-5 text-gray-600 leading-relaxed flex-grow">
+                  <p>
+                    At DevSol, our mission is to turn ideas into impactful technology. We build solutions that simplify everyday life, accelerate business growth, and unlock innovation. Combining creativity, technical expertise, and entrepreneurship, we deliver products and services that are reliable, scalable, and globally relevant.
+                  </p>
+                  <p>
+                    We strive to create an environment where talent grows and ideas flourish — so technology makes a real difference in Pakistan and across the world.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Additional Content - removed per user request */}
+        </div>
+      </section>
+
+      {/* Who We Are Section - removed per user request */}
+
+      {/* Our Story Section (removed content moved above) */}
+
+      {/* What Drives Us Section */}
+      <section className="py-2 relative bg-page-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-card-primary">What Drives Us</h2>
+            <p className="text-lg text-card-secondary max-w-4xl mx-auto leading-relaxed">
+              Our mission goes beyond just building technology solutions. We're driven by a deeper purpose to 
+              empower businesses and create positive change in the world.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold mb-6 text-card-primary">Democratize Technology</h3>
+              <p className="text-card-secondary leading-relaxed mb-6">
+                We believe that powerful technology solutions shouldn't be limited to large corporations. 
+                Every business, regardless of size, deserves access to tools that can transform their operations.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-bold mb-6 text-card-primary">Client Success</h3>
+              <p className="text-card-secondary leading-relaxed mb-6">
+                Our success is measured by our clients' success. We're not just building solutions; 
+                we're building partnerships that drive real business outcomes and growth.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values Section - MOVED DOWN */}
+      <section className="py-20 relative bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+              Core Values That Drive Our Brand Forward
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Our values serve as a guiding force for the company's actions, decisions, and interactions.
+            </p>
+          </motion.div>
+
+          {/* Core Values Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+            {/* Client Value */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-6 bg-primary/10 p-3 rounded-xl inline-block">
+                <Users className="w-10 h-10" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Client Value</h3>
+              <p className="text-gray-600 leading-relaxed">
+                We strive to exceed our clients' expectations and deliver measurable results that positively impact their business.
+              </p>
+            </motion.div>
+
+            {/* People Driven */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-4">
+                <Target className="w-12 h-12" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">People Driven</h3>
+              <p className="text-gray-600 leading-relaxed">
+                As a people-driven company, we prioritize the needs and well-being of our employees, customers, and communities.
+              </p>
+            </motion.div>
+
+            {/* Integrity */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-4">
+                <Check className="w-12 h-12" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Integrity</h3>
+              <p className="text-gray-600 leading-relaxed">
+                We place a high value on honesty, transparency, and ethical behavior, maintaining a high level of trust with our employees and other stakeholders.
+              </p>
+            </motion.div>
+
+            {/* Accountability */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-4">
+                <Award className="w-12 h-12" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Accountability</h3>
+              <p className="text-gray-600 leading-relaxed">
+                We value taking responsibility for our actions and outcomes, and holding ourselves accountable for our performance.
+              </p>
+            </motion.div>
+
+            {/* Collaboration */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-4">
+                <Workflow className="w-12 h-12" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Collaboration</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Collaboration fuels innovation and progress among us by bringing together diverse backgrounds & skill sets toward a common goal.
+              </p>
+            </motion.div>
+
+            {/* Innovation */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+            >
+              <div className="text-primary mb-4">
+                <Rocket className="w-12 h-12" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Innovation</h3>
+              <p className="text-gray-600 leading-relaxed">
+                We continuously push boundaries and embrace new technologies to create cutting-edge solutions that drive business transformation.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vision & Mission Section - removed per user request */}
+
+      {/* Future Vision Section - removed per user request */}
+
+      {/* Looking Ahead Section - removed per user request */}
+
+      {/* Founder Message Section */}
+      <section className="py-20 relative bg-page-background">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-card-primary">Message from the Founder & CEO</h2>
+            <div className="bg-card shadow-card rounded-2xl p-12 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+              <div className="relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                  {/* CEO Photo - Left */}
+                  <div className="lg:col-span-1 flex justify-center">
+                    <div className="relative">
+                      <Image
+                        src="/CEO.jpg"
+                        alt="Amir Shahzad - Founder & CEO"
+                        width={224}
+                        height={288}
+                        className="w-48 h-64 lg:w-56 lg:h-72 object-cover rounded-2xl border-2 border-gray-200 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
+                      />
+                      {/* Fallback if image fails to load */}
+                      <div className="hidden w-48 h-64 lg:w-56 lg:h-72 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-4xl font-bold border-2 border-gray-200 shadow-2xl">
+                        AS
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Message Content - Right */}
+                  <div className="lg:col-span-2">
+                    <blockquote className="text-lg lg:text-xl text-card-secondary leading-relaxed mb-6 italic">
+                      "At DevSol, we believe that technology should be a force for good, accessible to businesses of all sizes. 
+                      Our mission is to democratize technology and empower businesses to achieve their full potential. 
+                      Every project we undertake is not just about building solutions—it's about building partnerships that drive real business outcomes."
+                    </blockquote>
+                    <div>
+                      <p className="text-lg font-semibold text-card-primary">— Amir Shahzad</p>
+                      <p className="text-card-secondary">Founder & CEO, DevSol</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section - removed per user request */}
+
+      <Footer />
+    </main>
+  )
+}
+
+export default AboutPage

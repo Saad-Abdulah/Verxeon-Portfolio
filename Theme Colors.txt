@@ -1,0 +1,3 @@
+default cyan/green = "#30a7b1";
+dull golden = "#a4896c";
+teal = "#22A39F";

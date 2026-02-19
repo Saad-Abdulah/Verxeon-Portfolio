@@ -1,0 +1,73 @@
+      {/* Founder Message Section - CLEAN MINIMAL DESIGN */}
+      <section className="py-24 relative white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">Message from the Founder & CEO</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Hear directly from our visionary leader about DevSol's mission and values
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            {/* Main Card - Clean Design */}
+            <div className="white rounded-2xl shadow-lg overflow-hidden">
+              <div className="p-8 md:p-12 lg:p-16">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+                  {/* CEO Photo - Left */}
+                  <div className="lg:col-span-2 flex justify-center lg:justify-start">
+                    <div className="relative">
+                      <Image
+                        src="/ceo-photo.jpg"
+                        alt="Amir Shahzad - Founder & CEO"
+                        width={300}
+                        height={400}
+                        className="w-64 h-80 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-lg"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Message Content - Right */}
+                  <div className="lg:col-span-3">
+                    <div className="space-y-6">
+                      {/* Quote */}
+                      <blockquote className="text-xl lg:text-2xl text-gray-700 leading-relaxed font-medium">
+                        "At DevSol, we believe that technology should be a force for good, accessible to businesses of all sizes. 
+                        Our mission is to democratize technology and empower businesses to achieve their full potential. 
+                        Every project we undertake is not just about building solutions—it's about building partnerships that drive real business outcomes."
+                      </blockquote>
+
+                      {/* Signature */}
+                      <div className="pt-6 border-t border-gray-200">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-gray-900 mb-1">Amir Shahzad</p>
+                            <p className="text-lg text-gray-600">Founder & CEO</p>
+                            <p className="text-sm text-gray-500 font-medium">DevSol Technologies</p>
+                          </div>
+                          <div className="mt-4 sm:mt-0">
+                            <div className="text-sm text-gray-500">
+                              <p>Est. 2025</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>

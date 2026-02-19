@@ -1,0 +1,157 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { Users, Target, Award, Clock } from 'lucide-react'
+import { useRef, useEffect } from 'react'
+
+const TeamCollaboration = () => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current
+
+      // Force video to play immediately
+      const playVideo = () => {
+        video.play().catch(e => {
+          console.log('Video autoplay failed:', e)
+          // Try playing again after user interaction
+          document.addEventListener('click', () => {
+            video.play().catch(e2 => console.log('Manual play failed:', e2))
+          }, { once: true })
+        })
+      }
+
+      // Try to play immediately
+      playVideo()
+
+      // Also try when video is ready
+      video.addEventListener('canplay', playVideo)
+
+      return () => {
+        video.removeEventListener('canplay', playVideo)
+      }
+    }
+  }, [])
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">
+            Our <span className="text-primary">Collaborative</span> Approach
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            We work together seamlessly to deliver exceptional results through 
+            strategic collaboration and shared expertise.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Video Animation */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="relative h-80 rounded-2xl overflow-hidden shadow-lg">
+              <video
+                ref={videoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                className="w-full h-full object-cover"
+              >
+                <source src="/team.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+            </div>
+          </motion.div>
+
+          {/* Content */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Strategic Teamwork
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Our cross-functional teams combine diverse skills and perspectives 
+                to solve complex challenges and deliver innovative solutions that 
+                exceed client expectations.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+              >
+                <Users className="h-8 w-8 text-primary mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-2">Expert Team</h4>
+                <p className="text-sm text-gray-600">Diverse professionals with specialized skills</p>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+              >
+                <Target className="h-8 w-8 text-primary mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-2">Focused Goals</h4>
+                <p className="text-sm text-gray-600">Clear objectives and measurable outcomes</p>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                viewport={{ once: true }}
+                className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+              >
+                <Award className="h-8 w-8 text-primary mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-2">Quality Results</h4>
+                <p className="text-sm text-gray-600">Consistent delivery of excellence</p>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                viewport={{ once: true }}
+                className="bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
+              >
+                <Clock className="h-8 w-8 text-primary mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-2">Timely Delivery</h4>
+                <p className="text-sm text-gray-600">On-time project completion</p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default TeamCollaboration
